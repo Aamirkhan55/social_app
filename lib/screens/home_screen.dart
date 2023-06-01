@@ -26,10 +26,15 @@ class _HomePageState extends State<HomePage> {
         'Message' : textController.text,
         'TimeStamp' : DateTime.now(),
       });
-    } else {
-      
-    }
+    } 
+
+    setState(() {
+      textController.clear();
+    });
+
   }
+
+
 
   @override
   Widget build(BuildContext context) {
