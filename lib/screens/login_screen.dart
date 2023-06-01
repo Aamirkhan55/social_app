@@ -12,15 +12,32 @@ class LogInScreen extends StatefulWidget {
 }
 
 class _LogInScreenState extends State<LogInScreen> {
-
   final emailTextController = TextEditingController();
   final passwordTextController = TextEditingController();
 
-  void signIn() async{
-    await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: emailTextController.text, 
-      password: passwordTextController.text,
+  void signIn() async {
+    showDialog(
+        context: context,
+        builder: (context) => const Center(child: CircularProgressIndicator()));
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailTextController.text,
+        password: passwordTextController.text,
       );
+      if(context.mounted) Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
+       Navigator.pop(context);
+      displayMessage(e.code);
+    }
+  }
+
+  void displayMessage(String message) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text(message),
+            ));
   }
 
   @override
@@ -40,12 +57,12 @@ class _LogInScreenState extends State<LogInScreen> {
               ),
               // Welcome notes
               const SizedBox(height: 50),
-               Text(
+              Text(
                 "WellCome Back You've been messed !",
-                 style: TextStyle(
+                style: TextStyle(
                   color: Colors.grey[700],
-                 ),
                 ),
+              ),
               const SizedBox(height: 25),
               // Email
               MyTextField(
@@ -68,15 +85,15 @@ class _LogInScreenState extends State<LogInScreen> {
               ),
               const SizedBox(height: 25),
               // Register
-               Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     'Not a member?',
-                   style: TextStyle(
-                    color: Colors.grey[700],
-                   ), 
+                    style: TextStyle(
+                      color: Colors.grey[700],
                     ),
+                  ),
                   const SizedBox(width: 4),
                   GestureDetector(
                     onTap: widget.onTap,
