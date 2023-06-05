@@ -1,13 +1,40 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:social_app/components/like_button.dart';
 
-class PostMessage extends StatelessWidget {
+class PostMessage extends StatefulWidget {
   final String message;
   final String user;
+  final String postId;
+  final List<String> likes;
   const PostMessage({
     super.key,
     required this.message,
     required this.user,
+    required this.postId,
+    required this.likes,
   });
+
+  @override
+  State<PostMessage> createState() => _PostMessageState();
+}
+
+class _PostMessageState extends State<PostMessage> {
+  final currentUser = FirebaseAuth.instance.currentUser!;
+  bool isLiked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isLiked = widget.likes.contains(currentUser.email);
+  }
+
+  void toggleLike () {
+    setState(() {
+      isLiked = !isLiked;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,28 +47,26 @@ class PostMessage extends StatelessWidget {
       margin: const EdgeInsets.only(top: 25, left: 25, right: 25),
       child: Row(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle, 
-              color: Colors.grey[400],
-            ),
-            padding: const EdgeInsets.all(10),
-            child: const Icon(
-              Icons.person,
-              color: Colors.white,
+          Column(
+            children: [
+              //Like Button
+              LikedButton(
+                isLiked: true,
+                onTap: toggleLike,
               ),
+            ],
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                user,
+                widget.user,
                 style: TextStyle(
                   color: Colors.grey[500],
                 ),
               ),
               const SizedBox(height: 10),
-              Text(message),
+              Text(widget.message),
             ],
           )
         ],
