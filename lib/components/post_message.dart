@@ -1,5 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:social_app/components/like_button.dart';
 
@@ -30,10 +30,23 @@ class _PostMessageState extends State<PostMessage> {
     isLiked = widget.likes.contains(currentUser.email);
   }
 
-  void toggleLike () {
+  void toggleLike() {
     setState(() {
       isLiked = !isLiked;
     });
+
+    DocumentReference postRef =
+        FirebaseFirestore.instance.collection('User Posts').doc(widget.postId);
+
+    if (isLiked) {
+      postRef.update({
+        'Likes': FieldValue.arrayUnion([currentUser.email]),
+      });
+    } else {
+      postRef.update({
+        'Likes' : FieldValue.arrayRemove([currentUser.email])
+      });
+    }
   }
 
   @override
@@ -54,6 +67,12 @@ class _PostMessageState extends State<PostMessage> {
                 isLiked: true,
                 onTap: toggleLike,
               ),
+              const SizedBox(height: 10),
+              // Like Count
+              Text(
+                widget.likes.length.toString(),
+                style: const TextStyle(color: Colors.grey),
+                ),
             ],
           ),
           Column(

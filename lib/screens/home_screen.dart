@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:social_app/components/drawer.dart';
 import 'package:social_app/components/post_message.dart';
 import 'package:social_app/components/text_field.dart';
+import 'package:social_app/screens/profile_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,23 +21,27 @@ class _HomePageState extends State<HomePage> {
     await FirebaseAuth.instance.signOut();
   }
 
-  void postMessage() async{
+  void postMessage() async {
     if (textController.text.isNotEmpty) {
       FirebaseFirestore.instance.collection('User Post').add({
-        'User Email' : currentUser.email,
-        'Message' : textController.text,
-        'TimeStamp' : DateTime.now(),
-        'Likes' : [],
+        'User Email': currentUser.email,
+        'Message': textController.text,
+        'TimeStamp': DateTime.now(),
+        'Likes': [],
       });
-    } 
+    }
 
     setState(() {
       textController.clear();
     });
-
   }
 
+  void goToProfilePage() {
+    Navigator.pop(context);
 
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const ProfilePage()));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,12 +50,10 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Colors.grey[900],
         title: const Text('Social App'),
-        actions: [
-          IconButton(
-            onPressed: signOut,
-            icon: const Icon(Icons.logout),
-          )
-        ],
+      ),
+      drawer: MyDrawer(
+        onProfileTap: goToProfilePage,
+        onSignOut: signOut,
       ),
       body: Column(
         children: [
@@ -63,17 +67,16 @@ class _HomePageState extends State<HomePage> {
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       return ListView.builder(
-                        itemCount: snapshot.data!.docs.length,
-                        itemBuilder: (context, index) {
-                        final post = snapshot.data!.docs[index];
-                        return PostMessage(
-                          message: post['Message'],
-                          user: post['userEmail'], 
-                          postId: post.id, 
-                          likes: List<String>.from(post['Likes'] ?? []),
-
-                        );
-                      });
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (context, index) {
+                            final post = snapshot.data!.docs[index];
+                            return PostMessage(
+                              message: post['Message'],
+                              user: post['userEmail'],
+                              postId: post.id,
+                              likes: List<String>.from(post['Likes'] ?? []),
+                            );
+                          });
                     } else if (snapshot.hasError) {
                       return Center(
                         child: Text('Error :${snapshot.error}'),
