@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:social_app/components/comment_button.dart';
 import 'package:social_app/components/like_button.dart';
 
 class PostMessage extends StatefulWidget {
@@ -22,6 +23,7 @@ class PostMessage extends StatefulWidget {
 
 class _PostMessageState extends State<PostMessage> {
   final currentUser = FirebaseAuth.instance.currentUser!;
+  final _commentTextController = TextEditingController();
   bool isLiked = false;
 
   @override
@@ -44,9 +46,50 @@ class _PostMessageState extends State<PostMessage> {
       });
     } else {
       postRef.update({
-        'Likes' : FieldValue.arrayRemove([currentUser.email])
+        'Likes': FieldValue.arrayRemove([currentUser.email])
       });
     }
+  }
+
+  void addComment(String commentText) {
+    FirebaseFirestore.instance
+        .collection("User Post")
+        .doc(widget.postId)
+        .collection('Comments')
+        .add({
+      "CommentText": commentText,
+      "CommentBy": currentUser.email,
+      "CommentTime": Timestamp.now(),
+    });
+  }
+
+  void showCommentDailog() {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text("Add Comment"),
+              content: TextField(
+                controller: _commentTextController,
+                decoration:
+                    const InputDecoration(helperText: 'Write Comment ..'),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _commentTextController.clear();
+                  },
+                  child: const Text('Cancle'),
+                ),
+                TextButton(
+                    onPressed: () {
+                      addComment(_commentTextController.text);
+                      Navigator.pop(context);
+                      _commentTextController.clear();
+                    },
+                    child: const Text('Post')),
+              ],
+            ));
   }
 
   @override
@@ -58,23 +101,9 @@ class _PostMessageState extends State<PostMessage> {
       ),
       padding: const EdgeInsets.all(25),
       margin: const EdgeInsets.only(top: 25, left: 25, right: 25),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            children: [
-              //Like Button
-              LikedButton(
-                isLiked: true,
-                onTap: toggleLike,
-              ),
-              const SizedBox(height: 10),
-              // Like Count
-              Text(
-                widget.likes.length.toString(),
-                style: const TextStyle(color: Colors.grey),
-                ),
-            ],
-          ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -87,7 +116,43 @@ class _PostMessageState extends State<PostMessage> {
               const SizedBox(height: 10),
               Text(widget.message),
             ],
-          )
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Column(
+                children: [
+                  //Like Button
+                  LikedButton(
+                    isLiked: true,
+                    onTap: toggleLike,
+                  ),
+                  const SizedBox(height: 10),
+                  // Like Count
+                  Text(
+                    widget.likes.length.toString(),
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 10),
+              Column(
+                children: [
+                  //Commenty Button
+                  CommentButton(
+                    onTap: showCommentDailog,
+                  ),
+                  const SizedBox(height: 10),
+                  // Like Count
+                  const Text(
+                    '0',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ],
       ),
     );
