@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:social_app/components/comment_button.dart';
+import 'package:social_app/components/comments.dart';
 import 'package:social_app/components/like_button.dart';
+import 'package:social_app/helper/helper.dart';
 
 class PostMessage extends StatefulWidget {
   final String message;
@@ -96,7 +98,7 @@ class _PostMessageState extends State<PostMessage> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.grey[200],
         borderRadius: BorderRadius.circular(25),
       ),
       padding: const EdgeInsets.all(25),
@@ -107,14 +109,14 @@ class _PostMessageState extends State<PostMessage> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text(widget.message),
+              const SizedBox(height: 5),
               Text(
                 widget.user,
                 style: TextStyle(
                   color: Colors.grey[500],
                 ),
               ),
-              const SizedBox(height: 10),
-              Text(widget.message),
             ],
           ),
           const SizedBox(height: 20),
@@ -153,6 +155,36 @@ class _PostMessageState extends State<PostMessage> {
               ),
             ],
           ),
+          const SizedBox(height: 10),
+          StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('User Post')
+                  .doc(widget.postId)
+                  .collection('Comments')
+                  .orderBy('CommentTime', descending: true)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.grey[500],
+                    ),
+                  );
+                }
+                return ListView(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: snapshot.data!.docs.map((doc) {
+                    final commentData = doc.data() as Map<String, dynamic>;
+
+                    return Comment(
+                      user: commentData['CommentText'],
+                      text: commentData['CommentedBy'],
+                      time: formatDate(commentData['CommintTime']),
+                    );
+                  }).toList(),
+                );
+              })
         ],
       ),
     );

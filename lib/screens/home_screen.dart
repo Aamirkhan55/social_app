@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:social_app/components/drawer.dart';
 import 'package:social_app/components/post_message.dart';
 import 'package:social_app/components/text_field.dart';
+import 'package:social_app/helper/helper.dart';
 import 'package:social_app/screens/profile_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -73,6 +74,7 @@ class _HomePageState extends State<HomePage> {
                             return PostMessage(
                               message: post['Message'],
                               user: post['userEmail'],
+                              time: formatDate(post['TimeStamp']),
                               postId: post.id,
                               likes: List<String>.from(post['Likes'] ?? []),
                             );

@@ -19,12 +19,30 @@ class Comment extends StatelessWidget {
         borderRadius: BorderRadius.circular(4),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(text),
-
+          const SizedBox(height: 5),
           Row(
             children: [
-              Text(user),
+              Text(
+                user,
+                style: TextStyle(
+                  color: Colors.grey[400],
+                  ),
+                ),
+               Text(
+                ".",
+                style: TextStyle(
+                  color: Colors.grey[400],
+                  ),
+                ),
+              Text(
+                time,
+                style: TextStyle(
+                  color: Colors.grey[400],
+                  ),
+                ),
             ],
           )
         ],

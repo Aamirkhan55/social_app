@@ -11,7 +11,7 @@ class CommentButton extends StatelessWidget {
       child: const Icon(
         Icons.comment,
         color: Colors.grey,
-        ),
+      ),
     );
   }
 }
