@@ -12,4 +12,14 @@ ThemeData lightTheme = ThemeData(
       fontSize: 20,
     ),
   ),
+  colorScheme: ColorScheme.light(
+    background: Colors.grey[300]!,
+    primary: Colors.grey[200]!,
+    secondary: Colors.grey[300]!,
+  ),
+  textButtonTheme: TextButtonThemeData(
+    style: TextButton.styleFrom(
+      foregroundColor: Colors.black,
+    )
+  ),
 );
