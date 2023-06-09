@@ -10,13 +10,14 @@ class PostMessage extends StatefulWidget {
   final String message;
   final String user;
   final String postId;
+  final String time;
   final List<String> likes;
   const PostMessage({
     super.key,
     required this.message,
     required this.user,
     required this.postId,
-    required this.likes,
+    required this.likes, required this.time,
   });
 
   @override
@@ -98,7 +99,7 @@ class _PostMessageState extends State<PostMessage> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: Theme.of(context).colorScheme.primary,
         borderRadius: BorderRadius.circular(25),
       ),
       padding: const EdgeInsets.all(25),
@@ -111,12 +112,28 @@ class _PostMessageState extends State<PostMessage> {
             children: [
               Text(widget.message),
               const SizedBox(height: 5),
+               Row(
+            children: [
               Text(
                 widget.user,
                 style: TextStyle(
-                  color: Colors.grey[500],
+                  color: Colors.grey[400],
+                  ),
                 ),
-              ),
+               Text(
+                ".",
+                style: TextStyle(
+                  color: Colors.grey[400],
+                  ),
+                ),
+              Text(
+                widget.time,
+                style: TextStyle(
+                  color: Colors.grey[400],
+                  ),
+                ),
+            ],
+          )
             ],
           ),
           const SizedBox(height: 20),

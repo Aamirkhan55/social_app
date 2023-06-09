@@ -14,8 +14,8 @@ class MyTextBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(25),
-        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(10),
+        color: Theme.of(context).colorScheme.primary,
       ),
       margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
       padding: const EdgeInsets.only(left: 15, bottom: 15),
